@@ -39,6 +39,11 @@ export function makeJellyseerrClient(settings, networkMode = "lan") {
         headers: authHeaders
       });
     },
+    async getMedia(tmdbId, mediaType) {
+      // Returns the film/show detail object; caller reads `.mediaInfo?.status`.
+      const kind = mediaType === "tv" ? "tv" : "movie";
+      return fetchJson(`${base}/api/v1/${kind}/${tmdbId}`, { headers: authHeaders });
+    },
     async ping() {
       return fetchJson(`${base}/api/v1/status`, { headers: authHeaders });
     }

@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --lbx-bg: #14181c;
+  --lbx-bg-2: #1b2228;
+  --field: #20272e;
+  --field-line: #2c353d;
+  --ink: #f4f7fa;
+  --muted: #8a97a4;
+  --green: #00e054;
+  --blue: #40bcf4;
+  --orange: #ff8000;
+  --red: #e0224a;
+  --surface: linear-gradient(180deg, var(--lbx-bg-2), var(--lbx-bg));
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* In the toolbar popup the window itself rounds the corners (OS-clipped), so
+   the surface fills edge-to-edge with no inner radius — that avoids the
+   "rounded card inside a square window" double-edge artifact. */
+html, body {
+  width: 332px;
+  background: var(--surface);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.popup {
+  width: 100%;
+  background: transparent;
+  color: var(--ink);
+}
+
+/* Tab context (right-click → Options opens in a tab): float it as a card. */
+@media (min-width: 420px) {
+  html { width: auto; background:
+      radial-gradient(900px 500px at 80% -10%, rgba(64,188,244,.07), transparent 60%),
+      radial-gradient(800px 500px at 0% 110%, rgba(0,224,84,.06), transparent 55%),
+      #0c0f12; }
+  body { width: auto; background: none; display: flex; justify-content: center; padding: 56px 16px; }
+  .popup {
+    width: 332px;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 20px;
+    box-shadow: 0 24px 60px -22px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.05);
+    overflow: hidden;
+  }
+}
+
+/* top breathing room so content isn't flush against the toolbar edge */
+.head { display: flex; align-items: center; gap: 11px; padding: 22px 18px 14px; }
+
+.dots { display: flex; gap: 5px; transition: opacity .5s cubic-bezier(.32,.72,0,1); }
+.dots span { width: 9px; height: 9px; border-radius: 50%; transition: opacity .5s cubic-bezier(.32,.72,0,1); }
+.dots span:nth-child(1) { background: var(--green); }
+.dots span:nth-child(2) { background: var(--blue); }
+.dots span:nth-child(3) { background: var(--orange); }
+.dots.dim span { opacity: .32; background: #7e8c98; }
+
+.wordmark { font-weight: 700; font-size: 15px; letter-spacing: -.01em; }
+
+.pill {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 999px;
+  transition: color .4s, background .4s, border-color .4s;
+}
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+.pill.ok   { color: var(--green); background: rgba(0,224,84,.1);  border: 1px solid rgba(0,224,84,.28); }
+.pill.ok .dot { background: var(--green); animation: pulse 2s infinite; }
+.pill.idle { color: #9aa6b1; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
+.pill.idle .dot { background: #7e8c98; }
+.pill.work { color: var(--blue); background: rgba(64,188,244,.1); border: 1px solid rgba(64,188,244,.28); }
+.pill.work .dot { display: none; }
+.pill.err  { color: var(--red); background: rgba(224,34,74,.1); border: 1px solid rgba(224,34,74,.3); }
+.pill.err .dot { background: var(--red); }
+
+.pill .spinner { width: 11px; height: 11px; border-width: 2px; display: none; }
+.pill.work .spinner { display: block; }
+.pill.work .dot { display: none; }
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0,224,84,.5); }
+  70%  { box-shadow: 0 0 0 7px rgba(0,224,84,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,224,84,0); }
+}
+
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); }
+
+.body { padding: 16px 18px; display: flex; flex-direction: column; gap: 13px; }
+
+.field label {
+  display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px; padding-left: 2px;
+}
+
+.input {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--field); border: 1px solid var(--field-line);
+  border-radius: 11px; padding: 10px 12px;
+  transition: border-color .5s cubic-bezier(.32,.72,0,1), box-shadow .5s cubic-bezier(.32,.72,0,1);
+}
+.input:hover { border-color: #36424b; }
+.input:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(64,188,244,.16); }
+.input.bad { border-color: var(--red); box-shadow: 0 0 0 3px rgba(224,34,74,.14); }
+.ic { color: #647280; font-size: 14px; line-height: 0; }
+.input input {
+  flex: 1; min-width: 0; background: transparent; border: none; outline: none;
+  color: var(--ink); font-family: inherit; font-size: 13px; letter-spacing: .01em;
+}
+.input input::placeholder { color: #5a6772; }
+
+.cta {
+  margin-top: 3px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  border: none; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 13.5px;
+  padding: 12px 14px; border-radius: 999px; color: #07130a;
+  transition: transform .4s cubic-bezier(.32,.72,0,1), filter .4s, background .4s, color .4s;
+}
+.cta.green { background: var(--green); }
+.cta.green:hover { filter: brightness(1.05); }
+.cta:active { transform: scale(.98); }
+.cta.work { background: #2b343d; color: #cdd8e2; cursor: progress; }
+.cta:disabled { cursor: default; }
+.cta .arrow {
+  width: 22px; height: 22px; border-radius: 50%; background: rgba(7,19,10,.16);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .4s cubic-bezier(.32,.72,0,1);
+}
+.cta.green:hover .arrow { transform: translate(2px,-1px); }
+.cta.work .arrow { background: rgba(255,255,255,.08); }
+
+.spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid rgba(205,216,226,.3); border-top-color: #cdd8e2;
+  animation: spin .7s linear infinite;
+  flex: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.foot { padding: 0 18px 18px; display: flex; align-items: center; gap: 7px; font-size: 11.5px; min-height: 16px; }
+.foot.muted { color: var(--muted); }
+.foot.ok { color: var(--green); }
+.foot.err { color: #ff7088; }

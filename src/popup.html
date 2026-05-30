@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Letterarr</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup">
+    <div class="head">
+      <div class="dots" id="dots"><span></span><span></span><span></span></div>
+      <div class="wordmark">Letterarr</div>
+      <div class="pill idle" id="pill"><span class="dot"></span><span class="spinner pill-spinner"></span><span id="pill-label">Not connected</span></div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="body">
+      <div class="field">
+        <label for="jelly-url">Jellyseerr URL</label>
+        <div class="input" id="url-input">
+          <span class="ic">⌘</span>
+          <input id="jelly-url" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://192.168.1.10:5055" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="jelly-key">API Key</label>
+        <div class="input" id="key-input">
+          <span class="ic">⚷</span>
+          <input id="jelly-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your API key" />
+        </div>
+      </div>
+
+      <button class="cta green" id="save" type="button">
+        <span class="spinner" id="cta-spinner" hidden></span>
+        <span id="cta-label">Save &amp; verify</span>
+        <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <div class="foot muted" id="foot">Enter your server details to begin</div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
