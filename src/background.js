@@ -4,10 +4,6 @@ import {
 } from "./storage.js";
 import { makeJellyseerrClient } from "./apiClients.js";
 
-chrome.action.onClicked.addListener(() => {
-  chrome.runtime.openOptionsPage();
-});
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const handler = {
     addItem: async () => {
@@ -17,6 +13,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       } catch (err) {
         sendResponse({ ok: false, error: err.message });
       }
+    },
+    getStatus: async () => {
+      try {
+        const result = await performStatus(message.item);
+        sendResponse({ ok: true, ...result });
+      } catch (err) {
+        sendResponse({ ok: false, error: err.message });
+      }
+    },
+    openOptions: async () => {
+      chrome.runtime.openOptionsPage();
+      sendResponse({ ok: true });
     },
     testConnection: async () => {
       const testSettings = message.settings;
@@ -57,5 +65,24 @@ async function performAdd(item) {
 
   await jelly.request({ tmdbId, mediaType });
   return { via: "jellyseerr" };
+}
+
+async function performStatus(item) {
+  const settings = await getSettings();
+  const jelly = makeJellyseerrClient(settings, "lan");
+  if (!jelly) return { configured: false, status: null };
+
+  const mediaType = item.mediaType || "movie";
+  let tmdbId = item.tmdbId;
+
+  if (!tmdbId) {
+    const term = item.year ? `${item.title} ${item.year}` : item.title;
+    const search = await jelly.search(term);
+    const match = (search?.results || []).find((r) => (mediaType === "tv" ? r.mediaType === "tv" : r.mediaType !== "tv"));
+    return { configured: true, status: match?.mediaInfo?.status ?? null };
+  }
+
+  const media = await jelly.getMedia(tmdbId, mediaType);
+  return { configured: true, status: media?.mediaInfo?.status ?? null };
 }
 
