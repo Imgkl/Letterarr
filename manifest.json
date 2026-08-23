@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Letterarr",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0n+INfVzPsz3kgT2GG/OGhjFytcyRb1KrWtm3pWoeOL50TE4wpltj9cX9xLzA16njscMoB64qrEjroJCbk/QX6fEPliYfzAKLwHQWj8PfT2KKh+1Yg+AXDSr0YbHJ61C3G1gX98MZqIycDjGc1fpqVlvFA0oGLsT5swxKGKe089lxAd4Xu2mysE3sH1xIc8mGyArs1HVIGtLubhihiE6ef008xIn3aVmYNlBwIgRKIJcb7yeU/YEQVBAQvS4TBz4vNpF+fRJJCiLvQz8YlVTxFj2V6iUdMxBs4VdQ9k2ROi0Ug+WJwR/3eHvucI6eDdP4DarL66gpxisTVQY9TkK1wIDAQAB",
   "description": "Add the current Letterboxd film to Jellyseerr.",
   "version": "0.1.0",
   "permissions": [
@@ -21,7 +22,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://letterboxd.com/film/*"
+        "https://*.letterboxd.com/film/*"
       ],
       "js": ["src/content.js"],
       "run_at": "document_idle"
