@@ -1,6 +1,6 @@
 (function () {
   // Some browsers (Dia) serve film pages from a letterboxd.com subdomain such as
-  // embed.letterboxd.com — same markup, different origin. Accept any of them.
+  // embed.letterboxd.com - same markup, different origin. Accept any of them.
   if (!/^https:\/\/([a-z0-9-]+\.)*letterboxd\.com$/.test(location.origin)) return;
   if (!/^\/film\/[^/]+\/?$/.test(location.pathname)) return;
 
@@ -13,10 +13,10 @@
     checking:    { label: "Checking…",                      bg: "#2c3440", fg: "#99aabb" },
     setup:       { label: "Set up Letterarr →",             bg: "#ff8000", fg: "#14181c", action: openOptions },
     add:         { label: "Add to Jellyseerr",              bg: "#40bcf4", fg: "#14181c", action: doAdd },
-    requested:   { label: "Requested — view in Jellyseerr", bg: "#3a4149", fg: "#cbd5e0", action: openMedia },
+    requested:   { label: "Requested - view in Jellyseerr", bg: "#3a4149", fg: "#cbd5e0", action: openMedia },
     available:   { label: "Available in library",           bg: "#00e054", fg: "#14181c" },
-    failed:      { label: "Failed — retry",                 bg: "#e0224a", fg: "#ffffff", action: doAdd },
-    unreachable: { label: "⚠ Unreachable — retry",          bg: "#e0224a", fg: "#ffffff", action: requestStatus }
+    failed:      { label: "Failed - retry",                 bg: "#e0224a", fg: "#ffffff", action: doAdd },
+    unreachable: { label: "⚠ Unreachable - retry",          bg: "#e0224a", fg: "#ffffff", action: requestStatus }
   };
 
   let btn = null;
@@ -114,7 +114,7 @@
     }
   }
 
-  // 2 Pending and 3 Processing both mean "Jellyseerr has it, it isn't here yet" —
+  // 2 Pending and 3 Processing both mean "Jellyseerr has it, it isn't here yet",
   // a distinction with no value when you auto-approve your own requests.
   // 1 Unknown, 6 Blocklisted, 7 Deleted and null all mean "not on disk" → offer to add.
   // 4 Partially available is season-level TV semantics and never occurs for films.
@@ -144,7 +144,7 @@
     chrome.runtime.sendMessage({ type: "openOptions" });
   }
 
-  // Sends ids, not a URL — the background rebuilds the link from saved settings
+  // Sends ids, not a URL - the background rebuilds the link from saved settings
   // so nothing page-side can steer where we open a tab.
   function openMedia() {
     if (!resolvedTmdbId) return;
@@ -163,7 +163,7 @@
         // Deliberately sticky: no auto-revert, so a failure can't vanish while
         // you're closing the tab. Absence of red is how you know it worked.
         const err = chrome.runtime.lastError?.message || resp?.error;
-        applyState("failed", err ? `Failed: ${clamp(err)} — retry` : undefined);
+        applyState("failed", err ? `Failed: ${clamp(err)} - retry` : undefined);
         return;
       }
       if (resp.tmdbId) resolvedTmdbId = resp.tmdbId;
