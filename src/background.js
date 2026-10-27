@@ -1,6 +1,5 @@
 import {
   getSettings,
-  saveSettings,
   normalizeUrl,
   pickBaseUrl,
 } from "./storage.js";
@@ -35,15 +34,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ ok: true });
     },
     testConnection: async () => {
-      const testSettings = message.settings;
-      const jelly = makeJellyseerrClient({ jellyseerr: testSettings.jellyseerr }, "lan");
+      const jelly = makeJellyseerrClient({ jellyseerr: message.settings.jellyseerr }, "lan");
       if (!jelly) throw new Error("Missing base URL or API key");
-      await jelly.ping();
-      sendResponse({ ok: true });
-    },
-    saveSettings: async () => {
-      await saveSettings(message.settings);
-      sendResponse({ ok: true });
+      sendResponse(await checkConnection(jelly));
     }
   }[message?.type];
 
@@ -53,6 +46,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   return false;
 });
+
+// The popup words each reason differently: no HTTP answer at all, an answer
+// that isn't Jellyseerr's, or Jellyseerr refusing the key.
+async function checkConnection(jelly) {
+  try {
+    const { version } = await jelly.ping();
+    if (!version) return { ok: false, reason: "notJellyseerr" };
+    await jelly.me();
+    return { ok: true, version };
+  } catch (err) {
+    if (err.status === 401 || err.status === 403) return { ok: false, reason: "rejected" };
+    if (err.status || err instanceof SyntaxError) return { ok: false, reason: "notJellyseerr" };
+    return { ok: false, reason: "noAnswer" };
+  }
+}
 
 async function performAdd(item) {
   const settings = await getSettings();
