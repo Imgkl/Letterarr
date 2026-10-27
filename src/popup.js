@@ -2,6 +2,8 @@ import { getSettings, saveSettings } from "./storage.js";
 
 const $ = (id) => document.getElementById(id);
 const hostOf = (address) => address.trim().replace(/^[a-z]+:\/\//i, "").replace(/\/+$/, "");
+// Most people type the LAN address the way their browser shows it, without the scheme.
+const withScheme = (address) => (/^[a-z][a-z\d+.-]*:\/\//i.test(address) ? address : `http://${address}`);
 
 const EMPTY = {
   address: "Enter the address you open Jellyseerr at.",
@@ -123,8 +125,11 @@ function set(patch) {
   else render();
 }
 
+// A dropped message (the worker restarting) or an unbuildable address reads as no answer.
 const check = ({ address, key }) =>
-  chrome.runtime.sendMessage({ type: "testConnection", settings: { jellyseerr: { lanBaseUrl: address, apiKey: key } } });
+  chrome.runtime
+    .sendMessage({ type: "testConnection", settings: { jellyseerr: { lanBaseUrl: address, apiKey: key } } })
+    .then((r) => (r?.ok || FAILURES[r?.reason] ? r : { ok: false, reason: "noAnswer" }), () => ({ ok: false, reason: "noAnswer" }));
 
 async function verifySaved() {
   set({ phase: "checking", failure: null });
@@ -134,7 +139,8 @@ async function verifySaved() {
 
 async function submit(event) {
   event.preventDefault();
-  const draft = { address: $("address").value.trim(), key: $("key").value.trim() };
+  const address = $("address").value.trim();
+  const draft = { address: address && withScheme(address), key: $("key").value.trim() };
   const missing = !draft.address ? "address" : !draft.key ? "key" : null;
   if (missing) {
     set({ draft, missing, failure: null });
@@ -147,26 +153,26 @@ async function submit(event) {
   set({ phase: "connected", saved: draft, version: result.version, busy: false });
 }
 
+// Each act names the phases it runs in. The bar's buttons lag state by one frame
+// during a view transition, so a fast second click must not act on a stale button.
 const ACTS = {
-  edit: () => set({ back: { phase: state.phase, failure: state.failure }, phase: "editing", draft: { ...state.saved }, failure: null, missing: null }),
-  cancel: () => set({ ...state.back, missing: null }),
-  retry: verifySaved,
+  edit: { when: ["connected", "failed"], run: () => set({ back: { phase: state.phase, failure: state.failure }, phase: "editing", draft: { ...state.saved }, failure: null, missing: null }) },
+  cancel: { when: ["editing"], run: () => set({ ...state.back, missing: null }) },
+  retry: { when: ["failed"], run: verifySaved },
 };
+const act = (name) => ACTS[name].when.includes(state.phase) && ACTS[name].run();
 
 $("form").addEventListener("submit", submit);
 $("bar").addEventListener("click", (e) => {
   const b = e.target.closest("[data-act]");
-  if (b) ACTS[b.dataset.act]();
+  if (b) act(b.dataset.act);
 });
 document.addEventListener("keydown", (e) => {
-  if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey) return;
-  if (e.key.toLowerCase() === "e" && (state.phase === "connected" || state.phase === "failed")) {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "BUTTON" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const name = e.key === "Enter" ? "retry" : e.key.toLowerCase() === "e" ? "edit" : null;
+  if (name && ACTS[name].when.includes(state.phase)) {
     e.preventDefault();
-    ACTS.edit();
-  }
-  if (e.key === "Enter" && state.phase === "failed") {
-    e.preventDefault();
-    ACTS.retry();
+    act(name);
   }
 });
 $("reveal").addEventListener("click", () => {
