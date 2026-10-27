@@ -11,6 +11,9 @@ async function fetchJson(url, options = {}) {
   try {
     const res = await fetch(url, {
       ...options,
+      // Host permissions make Chrome attach the browser's Jellyseerr session
+      // cookie, which Jellyseerr accepts in place of a wrong API key.
+      credentials: "omit",
       signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
