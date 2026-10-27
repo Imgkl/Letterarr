@@ -30,7 +30,7 @@ No build step required.
 
 1. Click the Letterarr toolbar icon to open the popup.
 2. Enter your **Jellyseerr URL** (e.g. `http://192.168.1.10:5055`) and **API key**.
-3. Hit **Save & verify**. Settings are saved only after the connection is confirmed.
+3. Hit **Connect**. Settings are saved only after Jellyseerr accepts the address and the API key.
 
 > Find your API key in Jellyseerr under **Settings → General → API Key**.
 
