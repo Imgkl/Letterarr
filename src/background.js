@@ -1,6 +1,5 @@
 import {
   getSettings,
-  saveSettings,
   normalizeUrl,
   pickBaseUrl,
 } from "./storage.js";
@@ -35,15 +34,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ ok: true });
     },
     testConnection: async () => {
-      const testSettings = message.settings;
-      const jelly = makeJellyseerrClient({ jellyseerr: testSettings.jellyseerr }, "lan");
+      const jelly = makeJellyseerrClient({ jellyseerr: message.settings.jellyseerr }, "lan");
       if (!jelly) throw new Error("Missing base URL or API key");
-      await jelly.ping();
-      sendResponse({ ok: true });
-    },
-    saveSettings: async () => {
-      await saveSettings(message.settings);
-      sendResponse({ ok: true });
+      sendResponse(await checkConnection(jelly));
     }
   }[message?.type];
 
@@ -53,6 +46,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   return false;
 });
+
+// The popup words each reason differently. Only /auth/me can refuse the key:
+// /status is public, so a 401 or 403 there comes from a proxy in front of it.
+async function checkConnection(jelly) {
+  let version;
+  try {
+    ({ version } = await jelly.ping());
+  } catch (err) {
+    return { ok: false, reason: unreachableReason(err) };
+  }
+  if (!version) return { ok: false, reason: "notJellyseerr" };
+  try {
+    await jelly.me();
+  } catch (err) {
+    return { ok: false, reason: err.status === 401 || err.status === 403 ? "rejected" : unreachableReason(err) };
+  }
+  return { ok: true, version };
+}
+
+// A proxy answers 5xx while Jellyseerr behind it is down, so that counts as no
+// answer. Any other HTTP reply, or a body that isn't JSON, isn't Jellyseerr.
+function unreachableReason(err) {
+  if (err.status >= 500 || !(err.status || err instanceof SyntaxError)) return "noAnswer";
+  return "notJellyseerr";
+}
 
 async function performAdd(item) {
   const settings = await getSettings();

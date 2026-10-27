@@ -1,46 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Letterarr</title>
-  <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="popup">
-    <div class="head">
-      <div class="dots" id="dots"><span></span><span></span><span></span></div>
-      <div class="wordmark">Letterarr</div>
-      <div class="pill idle" id="pill"><span class="dot"></span><span class="spinner pill-spinner"></span><span id="pill-label">Not connected</span></div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8 12.1 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 16 16"><path d="M2 2l12 12M6.6 3.7A6.8 6.8 0 0 1 8 3.5c4.1 0 6.5 4.5 6.5 4.5a11 11 0 0 1-1.9 2.4M4.2 4.9A11 11 0 0 0 1.5 8S3.9 12.5 8 12.5a6.6 6.6 0 0 0 2.9-.7M6.6 6.6a2 2 0 0 0 2.8 2.8"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25"/><path d="M8 4.75v3.75M8 11h.01"/></symbol>
+  </svg>
+
+  <main class="popup" id="popup" data-tone="idle">
+    <div class="aura" aria-hidden="true"><i class="a1"></i><i class="a2"></i></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="top">
+      <img class="logo" src="../assets/icon48.png" alt="">
+      <span class="name">Letterarr</span>
+      <span class="chip" role="status"><i class="dot"></i><span id="chip"></span></span>
+    </header>
+
+    <section class="hero"><h1 id="title"></h1><p id="sub"></p></section>
+
+    <form class="glass" id="form" novalidate hidden>
+      <label class="field" id="field-address"><span class="lbl">Server address</span>
+        <input id="address" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://192.168.1.10:5055"></label>
+      <div class="err" id="error-address" hidden></div>
+      <label class="field last" id="field-key"><span class="lbl">API key</span>
+        <span class="inrow"><input id="key" class="secret" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your API key">
+        <button class="reveal" id="reveal" type="button" aria-label="Show API key" aria-pressed="false"><svg class="ico i-eye"><use href="#i-eye"/></svg><svg class="ico i-eye-off" hidden><use href="#i-eye-off"/></svg></button></span></label>
+      <div class="err" id="error-key" hidden></div>
+    </form>
+    <p class="hint" id="help-key" hidden>In Jellyseerr, open <b>Settings, General, API Key</b>.</p>
+
+    <div class="glass" id="saved" hidden>
+      <div class="row"><span class="t"><small>Server</small><span class="v" id="saved-host"></span></span><span class="tag ok" id="saved-version"></span></div>
+      <div class="row"><span class="t"><small>API key</small><span class="v">Saved</span></span><span class="sealed">Stored on this device</span></div>
     </div>
-    <div class="divider"></div>
 
-    <div class="body">
-      <div class="field">
-        <label for="jelly-url">Jellyseerr URL</label>
-        <div class="input" id="url-input">
-          <span class="ic">⌘</span>
-          <input id="jelly-url" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://192.168.1.10:5055" />
-        </div>
-      </div>
+    <div class="glass" id="trouble" hidden><ol class="steps" id="fix"></ol></div>
 
-      <div class="field">
-        <label for="jelly-key">API Key</label>
-        <div class="input" id="key-input">
-          <span class="ic">⚷</span>
-          <input id="jelly-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your API key" />
-        </div>
-      </div>
-
-      <button class="cta green" id="save" type="button">
-        <span class="spinner" id="cta-spinner" hidden></span>
-        <span id="cta-label">Save &amp; verify</span>
-        <span class="arrow">→</span>
-      </button>
-    </div>
-
-    <div class="foot muted" id="foot">Enter your server details to begin</div>
-  </div>
+    <footer class="bar" id="bar"></footer>
+  </main>
 
   <script type="module" src="popup.js"></script>
 </body>

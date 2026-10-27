@@ -11,6 +11,9 @@ async function fetchJson(url, options = {}) {
   try {
     const res = await fetch(url, {
       ...options,
+      // Host permissions make Chrome attach the browser's Jellyseerr session
+      // cookie, which Jellyseerr accepts in place of a wrong API key.
+      credentials: "omit",
       signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
@@ -19,7 +22,7 @@ async function fetchJson(url, options = {}) {
     });
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`Request failed ${res.status}: ${text}`);
+      throw Object.assign(new Error(`Request failed ${res.status}: ${text}`), { status: res.status });
     }
     return await res.json();
   } catch (err) {
@@ -63,6 +66,10 @@ export function makeJellyseerrClient(settings, networkMode = "lan") {
     },
     async ping() {
       return fetchJson(`${base}/api/v1/status`, { headers: authHeaders });
+    },
+    // /status is public, so only an authenticated route proves the key works.
+    async me() {
+      return fetchJson(`${base}/api/v1/auth/me`, { headers: authHeaders });
     }
   };
 }
