@@ -52,7 +52,7 @@ button,input{font:inherit;color:inherit}
   background:linear-gradient(180deg,#fff 30%,rgba(255,255,255,.66));-webkit-background-clip:text;background-clip:text;color:transparent}
 [data-tone=busy] .hero h1{background:linear-gradient(100deg,rgba(255,255,255,.55) 35%,#fff 50%,rgba(255,255,255,.55) 65%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;animation:shine 1.6s linear infinite}
 @keyframes shine{from{background-position:100% 0}to{background-position:-50% 0}}
-.hero p{margin-top:6px;color:var(--text-2);max-width:280px}
+.hero p{margin-top:6px;color:var(--text-2);max-width:280px;text-wrap:pretty}
 
 /* Frosted layer over the light. */
 .glass{margin:0 12px;border-radius:14px;view-transition-name:card;
@@ -68,14 +68,15 @@ button,input{font:inherit;color:inherit}
 .field input{display:block;width:100%;height:22px;background:none;border:0;outline:0;font-size:14px;letter-spacing:-.005em;caret-color:var(--ring)}
 .field input::placeholder{color:#5d6373;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;letter-spacing:-.005em;font-size:14px}
 .field input.secret{font-family:var(--mono);letter-spacing:.06em;font-size:13px}
-.field:focus-within{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(165,157,255,.75),0 0 0 4px rgba(124,108,255,.16);z-index:1}
+.field:focus-within{background:rgba(124,108,255,.07);box-shadow:inset 0 0 0 1px rgba(165,157,255,.75),inset 0 0 14px rgba(124,108,255,.14);z-index:1}
 .field:focus-within .lbl{color:#c4beff}
-.field.invalid{box-shadow:inset 0 0 0 1px rgba(251,113,133,.75),0 0 0 4px rgba(251,113,133,.12);z-index:1}
+.field.invalid{background:rgba(251,113,133,.05);box-shadow:inset 0 0 0 1px rgba(251,113,133,.75),inset 0 0 14px rgba(251,113,133,.1);z-index:1}
+.field.last:has(+ .err:not([hidden])){border-radius:0}
 .field.invalid .lbl{color:#fda4af}
 .reveal{flex:none;display:grid;place-items:center;width:26px;height:26px;margin:-4px -6px -4px 0;border:0;border-radius:7px;background:none;color:var(--text-3);cursor:pointer}
 .reveal:hover{color:var(--text);background:rgba(255,255,255,.07)}
 .reveal:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
-.err{display:flex;gap:7px;padding:9px 14px 10px;font-size:12px;color:#fda4af;border-top:1px solid var(--hair)}
+.err{text-wrap:pretty;display:flex;gap:7px;padding:9px 14px 10px;font-size:12px;color:#fda4af;border-top:1px solid var(--hair)}
 .err svg{flex:none;width:14px;height:14px;margin-top:1px}
 .hint{padding:10px 26px 0;font-size:12px;color:var(--text-3)}
 .hint b{font-weight:500;color:var(--text-2)}
@@ -121,6 +122,8 @@ kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 
   *,*::before,*::after,::view-transition-group(*){animation:none!important;transition:none!important}
   [data-tone=busy] .hero h1{background:linear-gradient(180deg,#fff 30%,rgba(255,255,255,.66));-webkit-background-clip:text;background-clip:text}
 }
+/* Chrome sizes the popup window to whole pixels, so fractional line heights would leave a half-pixel scroll. */
+@media (max-width:479px){html,body{overflow:hidden}}
 /* Options page: the same popup, centred in a wide tab. */
 @media (min-width:480px){
   body{min-height:100vh;display:grid;place-items:start center;align-content:start;padding-top:72px;background:radial-gradient(60% 40% at 50% 0,rgba(124,108,255,.12),transparent),var(--ground)}
